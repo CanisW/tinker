@@ -21,7 +21,7 @@ c
       module keys
       implicit none
       integer maxkey
-      parameter (maxkey=25000)
+      parameter (maxkey=250000)
       integer nkey
       character*240 keyline(maxkey)
       save
