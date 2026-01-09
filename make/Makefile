@@ -629,6 +629,7 @@ OBJS =	action.o \
 	readcart.o \
 	readdcd.o \
 	readdyn.o \
+	readexfldatm.o \
 	readgau.o \
 	readgdma.o \
 	readint.o \
@@ -1528,6 +1529,7 @@ libtinker.a: ${OBJS}
 	readcart.o \
 	readdcd.o \
 	readdyn.o \
+	readexfldatm.o \
 	readgau.o \
 	readgdma.o \
 	readint.o \
@@ -2095,6 +2097,7 @@ rattle.o: atomid.o atoms.o freeze.o group.o inform.o iounit.o moldyn.o units.o u
 readcart.o: output.o
 readdcd.o: atoms.o bound.o boxes.o files.o inform.o iounit.o math.o titles.o
 readdyn.o: atoms.o boxes.o files.o group.o iounit.o mdstuf.o moldyn.o rgddyn.o
+readexfldatm.o: atoms.o extfld.o iounit.o units.o
 readgau.o: ascii.o iounit.o qmstuf.o units.o
 readgdma.o: atomid.o atoms.o dma.o files.o iounit.o mpole.o units.o
 readint.o: atomid.o atoms.o files.o inform.o iounit.o titles.o zclose.o zcoord.o

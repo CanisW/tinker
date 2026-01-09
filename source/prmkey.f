@@ -17,6 +17,7 @@ c     force field potential energy functional forms and constants
 c
 c
       subroutine prmkey (text)
+      use atoms
       use angpot
       use bndpot
       use chgpot
@@ -398,12 +399,31 @@ c
          neutnbr = .true.
       else if (keyword(1:15) .eq. 'NEUTRAL-GROUPS ') then
          neutcut = .true.
-      else if (keyword(1:15) .eq. 'EXTERNAL-FIELD ') then
-         read (string,*,err=10,end=10)  (exfld(i),i=1,3)
-         use_exfld = .true.
-         do i = 1, 3
-            exfld(i) = exfld(i) / elefield
-         end do
+      else if (keyword(1:15) .eq. 'EXTERNAL-FIELD ' .or.
+     &         keyword(1:20) .eq. 'EXTERNAL-FIELD-ATOM ') then
+c        allocate the array if not already allocated and initialize all atoms to zero field
+         if (.not. allocated(exfld_atm))  then
+               allocate (exfld_atm(3,n))
+               do i = 1, n
+                     exfld_atm(1,i) = 0.0d0
+                     exfld_atm(2,i) = 0.0d0
+                     exfld_atm(3,i) = 0.0d0
+               end do
+         end if
+         if (keyword(1:15) .eq. 'EXTERNAL-FIELD ') then
+            read (string,*,err=10,end=10)  (exfld(i),i=1,3)
+            use_exfld = .true.
+            do i = 1, 3
+               exfld(i) = exfld(i) / elefield
+            end do
+         else if (keyword(1:20) .eq. 'EXTERNAL-FIELD-ATOM ') then
+            use_exfld = .true.
+            string = text(next:240)
+            next = 1
+            call getstring (string,exfld_atm_file,next)
+            if (next .eq. 1)  call gettext (string,exfld_atm_file,next)
+            call readexfldatm (exfld_atm_file)
+         end if
 c
 c     set control parameters for atomic multipole potentials
 c

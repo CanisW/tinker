@@ -219,8 +219,8 @@ c
          do ii = 1, npole
             i = ipole(ii)
             do j = 1, 3
-               field(j,i) = field(j,i) + exfld(j)
-               fieldp(j,i) = fieldp(j,i) + exfld(j)
+               field(j,i) = field(j,i) + exfld_atm(j,i) + exfld(j)
+               fieldp(j,i) = fieldp(j,i) + exfld_atm(j,i) + exfld(j)
             end do
          end do
       end if
