@@ -556,8 +556,10 @@ c
          do i = 1, npole
             e = 0.0d0
             do j = 1, 3
-               e = e - f*uind(j,i)*exfld(j)
+               e = e - f*uind(j,i)*(exfld(j)+exfld_atm(j,i))
             end do
+   !          write (*,98) exfld_atm(1,i), exfld_atm(2,i), exfld_atm(3,i)
+   ! 98       format (' External field atom: ', 3(f10.4))
             ep = ep + e
             nep = nep + 1
             aep(i) = aep(i) + e
@@ -692,7 +694,7 @@ c
 !$OMP& n13,i13,n14,i14,n15,i15,np11,ip11,np12,ip12,np13,ip13,np14,ip14,
 !$OMP& p2scale,p3scale,p4scale,p5scale,p2iscale,p3iscale,p4iscale,
 !$OMP& p5iscale,nelst,elst,use_thole,use_chgpen,use_bounds,off2,f,
-!$OMP& exfld,molcule,name,verbose,debug,header,iout)
+!$OMP& exfld,exfld_atm,use_exfld,molcule,name,verbose,debug,header,iout)
 !$OMP& firstprivate(pscale) shared (ep,nep,aep,einter)
 !$OMP DO reduction(+:ep,nep,aep,einter) schedule(guided)
 c
@@ -897,8 +899,10 @@ c
          do i = 1, npole
             e = 0.0d0
             do j = 1, 3
-               e = e - f*uind(j,i)*exfld(j)
+               e = e - f*uind(j,i)*(exfld(j)+exfld_atm(j,i))
             end do
+   !          write (*,97) exfld_atm(1,i), exfld_atm(2,i), exfld_atm(3,i)
+   ! 97       format (' External field atom: ', 3(f10.4))
             ep = ep + e
             nep = nep + 1
             aep(i) = aep(i) + e
@@ -1588,8 +1592,10 @@ c
          do i = 1, npole
             e = 0.0d0
             do j = 1, 3
-               e = e - f*uind(j,i)*exfld(j)
+               e = e - f*uind(j,i)*(exfld(j)+exfld_atm(j,i))
             end do
+   !          write (*,96) exfld_atm(1,i), exfld_atm(2,i), exfld_atm(3,i)
+   ! 96       format (' External field atom: ', 3(f10.4))
             ep = ep + e
             nep = nep + 1
             aep(i) = aep(i) + e
@@ -1832,7 +1838,7 @@ c
 !$OMP& n13,i13,n14,i14,n15,i15,np11,ip11,np12,ip12,np13,ip13,np14,ip14,
 !$OMP& p2scale,p3scale,p4scale,p5scale,p2iscale,p3iscale,p4iscale,
 !$OMP& p5iscale,nelst,elst,use_thole,use_chgpen,use_bounds,off2,f,
-!$OMP& exfld,molcule,name,verbose,debug,header,iout)
+!$OMP& exfld,exfld_atm,use_exfld,molcule,name,verbose,debug,header,iout)
 !$OMP& firstprivate(pscale) shared (ep,nep,aep,einter)
 !$OMP DO reduction(+:ep,nep,aep,einter) schedule(guided)
 c
@@ -2057,13 +2063,18 @@ c
 c
 c     increment polarization energy due to external field
 c
+      write (*,90) use_exfld, npole
+   90  format (' External field used: ',l1,' on ',i6,' poles')
+      
       if (use_exfld) then
 !$OMP    DO reduction(+:ep,nep,aep) schedule(guided)
          do i = 1, npole
             e = 0.0d0
             do j = 1, 3
-               e = e - f*uind(j,i)*exfld(j)
+               e = e - f*uind(j,i)*(exfld(j)+exfld_atm(j,i))
             end do
+   !          write (*,99) exfld_atm(1,i), exfld_atm(2,i), exfld_atm(3,i)
+   ! 99       format (' External field atom: ', 3(f10.4))
             ep = ep + e
             nep = nep + 1
             aep(i) = aep(i) + e

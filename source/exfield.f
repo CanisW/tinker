@@ -63,7 +63,7 @@ c     calculate external field energy over atomic multipoles
 c
       if (mode .eq. 'MPOLE') then
 !$OMP    PARALLEL default(private) shared(npole,ipole,use,
-!$OMP&    x,y,z,f,rpole,exfld,exf)
+!$OMP&    x,y,z,f,rpole,exfld,exfld_atm,exf)
 !$OMP    DO reduction(+:exf) schedule(guided)
          do ii = 1, npole
             i = ipole(ii)
@@ -72,12 +72,16 @@ c
                yi = y(i)
                zi = z(i)
                ci = rpole(1,i)
-               phi = xi*exfld(1) + yi*exfld(2) + zi*exfld(3)
+               phi = xi * (exfld(1)+exfld_atm(1,i)) 
+     &                + yi * (exfld(2)+exfld_atm(2,i)) 
+     &                + zi * (exfld(3)+exfld_atm(3,i))
                dix = rpole(2,i)
                diy = rpole(3,i)
                diz = rpole(4,i)
-               e = -f * (ci*phi + dix*exfld(1)
-     &                      + diy*exfld(2) + diz*exfld(3))
+               e = -f * (ci*phi 
+     &                    + dix*(exfld(1)+exfld_atm(1,i))
+     &                    + diy*(exfld(2)+exfld_atm(2,i)) 
+     &                    + diz*(exfld(3)+exfld_atm(3,i)))
                exf = exf + e
             end if
          end do
@@ -184,7 +188,7 @@ c     calculate energy and derivatives over atomic multipoles
 c
       if (mode .eq. 'MPOLE') then
 !$OMP    PARALLEL default(private) shared(npole,ipole,use,
-!$OMP&    x,y,z,xaxis,yaxis,zaxis,f,rpole,exfld,exf,dem,vir)
+!$OMP&    x,y,z,xaxis,yaxis,zaxis,f,rpole,exfld,exfld_atm,exf,dem,vir)
 !$OMP    DO reduction(+:exf,dem,vir) schedule(guided)
          do ii = 1, npole
             i = ipole(ii)
@@ -196,16 +200,26 @@ c
                dix = rpole(2,i)
                diy = rpole(3,i)
                diz = rpole(4,i)
-               phi = xi*exfld(1) + yi*exfld(2) + zi*exfld(3)
-               e = -f * (ci*phi + dix*exfld(1)
-     &                      + diy*exfld(2) + diz*exfld(3))
+               phi = xi * (exfld(1)+exfld_atm(1,i)) 
+     &                + yi * (exfld(2)+exfld_atm(2,i)) 
+     &                + zi * (exfld(3)+exfld_atm(3,i))
+               dix = rpole(2,i)
+               diy = rpole(3,i)
+               diz = rpole(4,i)
+               e = -f * (ci*phi 
+     &                    + dix*(exfld(1)+exfld_atm(1,i))
+     &                    + diy*(exfld(2)+exfld_atm(2,i)) 
+     &                    + diz*(exfld(3)+exfld_atm(3,i)))
                exf = exf + e
 c
 c     gradient and virial components from dipole interactions
 c
-               tem(1) = f * (diy*exfld(3)-diz*exfld(2))
-               tem(2) = f * (diz*exfld(1)-dix*exfld(3))
-               tem(3) = f * (dix*exfld(2)-diy*exfld(1))
+               tem(1) = f * (diy*(exfld(3)+exfld_atm(3,i))
+     &                        -diz*(exfld(2)+exfld_atm(2,i)))
+               tem(2) = f * (diz*(exfld(1)+exfld_atm(1,i))
+     &                        -dix*(exfld(3)+exfld_atm(3,i)))
+               tem(3) = f * (dix*(exfld(2)+exfld_atm(2,i))
+     &                        -diy*(exfld(1)+exfld_atm(1,i)))
                call torque (i,tem,fix,fiy,fiz,dem)
                iz = zaxis(i)
                ix = xaxis(i)
@@ -234,9 +248,9 @@ c
 c
 c     gradient and virial components from monopole interactions
 c
-               frx = -f * exfld(1) * ci
-               fry = -f * exfld(2) * ci
-               frz = -f * exfld(3) * ci
+               frx = -f * (exfld(1)+exfld_atm(1,i)) * ci
+               fry = -f * (exfld(2)+exfld_atm(2,i)) * ci
+               frz = -f * (exfld(3)+exfld_atm(3,i)) * ci
                dem(1,i) = dem(1,i) + frx
                dem(2,i) = dem(2,i) + fry
                dem(3,i) = dem(3,i) + frz
@@ -330,7 +344,7 @@ c     calculate energy and partitioning over atomic multipoles
 c
       if (mode .eq. 'MPOLE') then
 !$OMP    PARALLEL default(private) shared(npole,ipole,use,
-!$OMP&    x,y,z,f,rpole,exfld,exf,nem,aem)
+!$OMP&    x,y,z,f,rpole,exfld,exfld_atm,exf,nem,aem)
 !$OMP    DO reduction(+:exf,nem,aem) schedule(guided)
          do ii = 1, npole
             i = ipole(ii)
@@ -339,13 +353,23 @@ c
                yi = y(i)
                zi = z(i)
                ci = rpole(1,i)
-               phi = xi*exfld(1) + yi*exfld(2) + zi*exfld(3)
+               phi = xi * (exfld(1)+exfld_atm(1,i)) 
+     &                + yi * (exfld(2)+exfld_atm(2,i)) 
+     &                + zi * (exfld(3)+exfld_atm(3,i))
                dix = rpole(2,i)
                diy = rpole(3,i)
                diz = rpole(4,i)
-               e = -f * (ci*phi + dix*exfld(1)
-     &                      + diy*exfld(2) + diz*exfld(3))
+               e = -f * (ci*phi 
+     &                    + dix*(exfld(1)+exfld_atm(1,i))
+     &                    + diy*(exfld(2)+exfld_atm(2,i)) 
+     &                    + diz*(exfld(3)+exfld_atm(3,i)))
+               
                exf = exf + e
+!                write (*,99) i, phi, e, exfld(1), exfld(2), exfld(3), 
+!      &                 exfld_atm(1,i), exfld_atm(2,i), exfld_atm(3,i)
+!  99            format ('DEBUG exfield3 MPOLE: atom',i4,' phi=',f12.6,
+!      &                 ' e=',f12.6,' exfld=',3(f12.6),
+!      &                 ' exfld_atm=',3(f12.6))
                nem = nem + 1
                aem(i) = aem(i) + e
             end if
