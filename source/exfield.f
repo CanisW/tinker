@@ -29,6 +29,8 @@ c
       real*8 exf,e,f,phi
       real*8 xi,yi,zi
       real*8 ci,dix,diy,diz
+      real*8 qixx, qixy, qixz
+      real*8 qiyy, qiyz, qizz 
       character*6 mode
 c
 c
@@ -83,6 +85,19 @@ c
      &                    + diy*(exfld(2)+exfld_atm(2,i)) 
      &                    + diz*(exfld(3)+exfld_atm(3,i)))
                exf = exf + e
+               qixx = rpole(5,i)
+               qixy = rpole(6,i)
+               qixz = rpole(7,i)
+               qiyy = rpole(9,i)
+               qiyz = rpole(10,i)
+               qizz = rpole(13,i)
+               e = - (1.d0/6.d0) * ((qixx*exfld_atm(5,i))
+     &           + 2 * (qixy*exfld_atm(6,i)) 
+     &           + 2 * (qixz*exfld_atm(7,i))
+     &           + (qiyy*exfld_atm(9,i))
+     &           + 2 * (qiyz*exfld_atm(10,i))
+     &           + (qizz*exfld_atm(13,i)))
+               exf = exf + e          
             end if
          end do
 !$OMP    END DO
@@ -119,6 +134,8 @@ c
       real*8 exf,e,f,phi
       real*8 xi,yi,zi
       real*8 ci,dix,diy,diz
+      real*8 qixx, qixy, qixz
+      real*8 qiyy, qiyz, qizz
       real*8 xix,yix,zix
       real*8 xiy,yiy,ziy
       real*8 xiz,yiz,ziz
@@ -211,6 +228,22 @@ c
      &                    + diy*(exfld(2)+exfld_atm(2,i)) 
      &                    + diz*(exfld(3)+exfld_atm(3,i)))
                exf = exf + e
+
+               qixx = rpole(5,i)
+               qixy = rpole(6,i)
+               qixz = rpole(7,i)
+               qiyy = rpole(9,i)
+               qiyz = rpole(10,i)
+               qizz = rpole(13,i)
+               e = - (1.d0/6.d0) * ((qixx*exfld_atm(5,i))
+     &           + 2 * (qixy*exfld_atm(6,i))
+     &           + 2 * (qixz*exfld_atm(7,i))
+     &           + (qiyy*exfld_atm(9,i))
+     &           + 2 * (qiyz*exfld_atm(10,i))
+     &           + (qizz*exfld_atm(13,i)))
+               exf = exf + e
+
+
 c
 c     gradient and virial components from dipole interactions
 c
@@ -308,6 +341,8 @@ c
       real*8 exf,e,f,phi
       real*8 xi,yi,zi
       real*8 ci,dix,diy,diz
+      real*8 qixx, qixy, qixz
+      real*8 qiyy, qiyz, qizz
       character*6 mode
 c
 c
@@ -365,6 +400,20 @@ c
      &                    + diz*(exfld(3)+exfld_atm(3,i)))
                
                exf = exf + e
+               qixx = rpole(5,i)
+               qixy = rpole(6,i)
+               qixz = rpole(7,i)
+               qiyy = rpole(9,i)
+               qiyz = rpole(10,i)
+               qizz = rpole(13,i)
+               e = - (1.d0/6.d0) * ((qixx*exfld_atm(5,i))
+     &           + 2 * (qixy*exfld_atm(6,i))
+     &           + 2 * (qixz*exfld_atm(7,i))
+     &           + (qiyy*exfld_atm(9,i))
+     &           + 2 * (qiyz*exfld_atm(10,i))
+     &           + (qizz*exfld_atm(13,i)))
+               exf = exf + e
+
 !                write (*,99) i, phi, e, exfld(1), exfld(2), exfld(3), 
 !      &                 exfld_atm(1,i), exfld_atm(2,i), exfld_atm(3,i)
 !  99            format ('DEBUG exfield3 MPOLE: atom',i4,' phi=',f12.6,

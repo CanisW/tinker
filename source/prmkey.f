@@ -403,11 +403,17 @@ c
      &         keyword(1:20) .eq. 'EXTERNAL-FIELD-ATOM ') then
 c        allocate the array if not already allocated and initialize all atoms to zero field
          if (.not. allocated(exfld_atm))  then
-               allocate (exfld_atm(3,n))
+               allocate (exfld_atm(9,n))
                do i = 1, n
                      exfld_atm(1,i) = 0.0d0
                      exfld_atm(2,i) = 0.0d0
                      exfld_atm(3,i) = 0.0d0
+                     exfld_atm(4,i) = 0.0d0
+                     exfld_atm(5,i) = 0.0d0
+                     exfld_atm(6,i) = 0.0d0
+                     exfld_atm(7,i) = 0.0d0
+                     exfld_atm(8,i) = 0.0d0
+                     exfld_atm(9,i) = 0.0d0
                end do
          end if
          if (keyword(1:15) .eq. 'EXTERNAL-FIELD ') then
