@@ -74,7 +74,7 @@ c
          read (record(next:240),*,err=40,end=40) fx, fy, fz,
      &            fxx, fxy, fxz, fyy, fyz, fzz 
        
-c        store the field components
+c        store the field components and gradients
 c
          exfld_atm(1,iatm) = fx
          exfld_atm(2,iatm) = fy
@@ -92,6 +92,11 @@ c
          exfld_atm(1,iatm) = exfld_atm(1,iatm) * 10 / elefield
          exfld_atm(2,iatm) = exfld_atm(2,iatm) * 10 / elefield
          exfld_atm(3,iatm) = exfld_atm(3,iatm) * 10 / elefield
+
+c
+c        convert external field gradients from V/nm^2 to atomic units
+c
+
          exfld_atm(4,iatm) = exfld_atm(4,iatm) * 100 / elefield
          exfld_atm(5,iatm) = exfld_atm(5,iatm) * 100 / elefield
          exfld_atm(6,iatm) = exfld_atm(6,iatm) * 100 / elefield
@@ -121,6 +126,10 @@ c
    60    format (' Atom',i6,' : Input=',3f12.8,
      &           ' (V/nm)  --> ',3f12.8,' (a.u.)')
       end do
+
+c
+c     print summary of external field gradients for all atoms
+c
 
       write (iout,70)
    70 format (/,' External Field Gradients Summary for All Atoms:',/)
