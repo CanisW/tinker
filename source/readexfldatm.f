@@ -28,7 +28,7 @@ c
       integer i,iatm,next
       integer iefatm,islash
       integer freeunit
-      real*8 fx,fy,fz
+      real*8 fx,fy,fz,fxx, fxy, fxz, fyy, fyz, fzz
       character*40 atmstr
       character*40 dummy
       character*240 filename
@@ -49,7 +49,7 @@ c
       do while (.true.)
          read (iefatm,20,err=40,end=40)  record
    20    format (a240)
-c
+c        
 c        skip blank lines
 c
          if (len_trim(record) .eq. 0)  goto 30
@@ -71,19 +71,38 @@ c        skip the atom name after the slash and read the field values
 c
          next = islash + 1
          call gettext (record,dummy,next)
-         read (record(next:240),*,err=40,end=40)  fx, fy, fz
-c
-c        store the field components
+         read (record(next:240),*,err=40,end=40) fx, fy, fz,
+     &            fxx, fxy, fxz, fyy, fyz, fzz 
+       
+c        store the field components and gradients
 c
          exfld_atm(1,iatm) = fx
          exfld_atm(2,iatm) = fy
          exfld_atm(3,iatm) = fz
+         exfld_atm(4,iatm) = fxx
+         exfld_atm(5,iatm) = fxy
+         exfld_atm(6,iatm) = fxz
+         exfld_atm(7,iatm) = fyy
+         exfld_atm(8,iatm) = fyz
+         exfld_atm(9,iatm) = fzz
+
 c
 c        convert external field from V/nm to atomic units
 c
          exfld_atm(1,iatm) = exfld_atm(1,iatm) * 10 / elefield
          exfld_atm(2,iatm) = exfld_atm(2,iatm) * 10 / elefield
          exfld_atm(3,iatm) = exfld_atm(3,iatm) * 10 / elefield
+
+c
+c        convert external field gradients from V/nm^2 to atomic units
+c
+
+         exfld_atm(4,iatm) = exfld_atm(4,iatm) * 100 / elefield
+         exfld_atm(5,iatm) = exfld_atm(5,iatm) * 100 / elefield
+         exfld_atm(6,iatm) = exfld_atm(6,iatm) * 100 / elefield
+         exfld_atm(7,iatm) = exfld_atm(7,iatm) * 100 / elefield
+         exfld_atm(8,iatm) = exfld_atm(8,iatm) * 100 / elefield
+         exfld_atm(9,iatm) = exfld_atm(9,iatm) * 100 / elefield
    30    continue
       end do
    40 continue
@@ -107,5 +126,32 @@ c
    60    format (' Atom',i6,' : Input=',3f12.8,
      &           ' (V/nm)  --> ',3f12.8,' (a.u.)')
       end do
+
+c
+c     print summary of external field gradients for all atoms
+c
+
+      write (iout,70)
+   70 format (/,' External Field Gradients Summary for All Atoms:',/)
+
+      do i = 1, n
+         fxx = exfld_atm(4,i) *  elefield / 100
+         fxy = exfld_atm(5,i) *  elefield / 100
+         fxz = exfld_atm(6,i) *  elefield / 100
+         fyy = exfld_atm(7,i) *  elefield / 100
+         fyz = exfld_atm(8,i) *  elefield / 100
+         fzz = exfld_atm(9,i) *  elefield / 100
+         write (iout,80)  i, fxx, fxy, fxz,
+     &                    fyy, fyz, fzz,
+     &                    exfld_atm(4,i),
+     &                    exfld_atm(5,i),
+     &                    exfld_atm(6,i),
+     &                    exfld_atm(7,i),
+     &                    exfld_atm(8,i),
+     &                    exfld_atm(8,i)
+   80    format (' Atom',i6,' : Input=',6f12.8,
+     &           ' (V/nm^2)  --> ',6f12.8,' (a.u.)')
+      end do
+
       return
       end
